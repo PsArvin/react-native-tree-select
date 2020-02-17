@@ -27,9 +27,11 @@ export interface TreeSelectProps {
 	treeNodeStyle?: {
 		openIcon?: ReactElement;
 		closeIcon?: ReactElement;
+		organizationIcon?: ReactElement;
+		itemIcon?: ReactElement;
 	};
 }
 
-declare class TreeSelect extends Component<TreeSelectProps, {}> {}
+declare class TreeSelect extends Component<TreeSelectProps, {}> { }
 
 export default TreeSelect;
