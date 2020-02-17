@@ -27,7 +27,9 @@ Example usage:
  首先能够通过如下命令进行安装
 
 ```$xslt
-npm i react-native-tree-select
+npm install https://github.com/PsArvin/react-native-tree-select.git 
+或者
+yarn add https://github.com/PsArvin/react-native-tree-select.git
 ```
 然后通过下面命令进行导入：
 ```$xslt
@@ -197,7 +199,7 @@ import TreeSelect from 'react-native-tree-select';
 在本地运行，首先得克隆该项目，使用下面命令进行克隆，[克隆地址](https://github.com/suwu150/react-native-tree-select)
   先克隆该项目
   ```
-  git clone https://github.com/suwu150/react-native-tree-select.git
+  git clone https://github.com/PsArvin/react-native-tree-select.git
   ```
   然后进入项目，cd treeSelectExample进入到演示项目，通过以下命令安装依赖
   ```
