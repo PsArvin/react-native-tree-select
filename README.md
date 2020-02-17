@@ -195,19 +195,5 @@ import TreeSelect from 'react-native-tree-select';
 |selectedItemStyle|指定点击按钮选中时的样式,其中包含三个子项backgroudColor：选中时的颜色, fontSize：选中时的字体大小, color：选中时字体的颜色|css style|no|{}|-|
 |treeNodeStyle|指定节点处的图标样式，包含两个属性openIcon，closeIcon,支持传icon和image类型|object|no|null|-|
 
-3.本地运行
-在本地运行，首先得克隆该项目，使用下面命令进行克隆，[克隆地址](https://github.com/suwu150/react-native-tree-select)
-  先克隆该项目
-  ```
-  git clone https://github.com/PsArvin/react-native-tree-select.git
-  ```
-  然后进入项目，cd treeSelectExample进入到演示项目，通过以下命令安装依赖
-  ```
-  npm install
-  ```
-  通过以下命令运行项目
-  ```
-  react-native run-ios
-  ```
-4.组件简介
+3.组件简介
 能够按照数据结构进行展开树状结构，通常用来进行展示具有明显层级关系的数据结构
