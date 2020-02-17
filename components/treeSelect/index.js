@@ -3,27 +3,6 @@ import { StyleSheet, View, TextInput, FlatList, Text, TouchableOpacity } from 'r
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { breadthFirstRecursion } from '../utils/menutransform';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  textName: {
-    fontSize: 14,
-    marginLeft: 5
-  },
-  contentContainer: {
-    paddingBottom: 20,
-    backgroundColor: 'white',
-  },
-  collapseIcon: {
-    width: 0,
-    height: 0,
-    marginRight: 2,
-    borderStyle: 'solid',
-  }
-});
-
 export default class TreeSelect extends Component {
   constructor(props) {
     super(props);
@@ -31,6 +10,7 @@ export default class TreeSelect extends Component {
     this.state = {
       nodesStatus: this._initNodesStatus(),
       currentNode: this._initCurrentNode(),
+      currentRoot: '',
       searchValue: ''
     };
   }
@@ -93,13 +73,27 @@ export default class TreeSelect extends Component {
     return stack;
   };
 
-  _onPressCollapse = ({ e, item }) => { // eslint-disable-line
+  _onPressCollapse(item) {
     const { data, selectType, leafCanBeSelected } = this.props;
     const { currentNode } = this.state;
     const routes = this._find(data, item.id);
     this.setState((state) => {
       const nodesStatus = new Map(state.nodesStatus);
-      nodesStatus.set(item && item.id, !nodesStatus.get(item && item.id)); // toggle
+      if (nodesStatus.has(item && item.id)) {
+        nodesStatus.set(item && item.id, true);
+      } else {
+        nodesStatus.set(item && item.id, true);
+      }
+
+      const dataArray = data && data.map((item) => item.id);
+      nodesStatus.forEach(function (value, key, map) {
+        if (key !== item.id && dataArray.includes(item.id)) {
+          nodesStatus.set(key, false); // toggle
+        }
+      });
+
+      // nodesStatus.set(item && item.id, !nodesStatus.get(item && item.id)); // toggle
+
       // 计算currentNode的内容
       if (selectType === 'multiple') {
         const tempCurrentNode = currentNode.includes(item.id) ?
@@ -120,8 +114,8 @@ export default class TreeSelect extends Component {
     });
   };
 
-  _onClickLeaf = ({ e, item }) => { // eslint-disable-line
-    const { onClickLeaf, onClick, selectType, leafCanBeSelected } = this.props;
+  _onClickLeaf(item) { // eslint-disable-line
+    const { selectType } = this.props;
     const { data } = this.props;
     const { currentNode } = this.state;
     const routes = this._find(data, item.id);
@@ -139,7 +133,7 @@ export default class TreeSelect extends Component {
         };
       }
     }, () => {
-      onClick && onClick({ item, routes, currentNode: this.state.currentNode });
+      const { onClickLeaf } = this.props;
       onClickLeaf && onClickLeaf({ item, routes, currentNode: this.state.currentNode });
     });
   };
@@ -154,13 +148,13 @@ export default class TreeSelect extends Component {
       borderTopWidth: 10,
       borderTopColor: 'black',
     } : {
-      borderBottomWidth: 5,
-      borderBottomColor: 'transparent',
-      borderTopWidth: 5,
-      borderTopColor: 'transparent',
-      borderLeftWidth: 10,
-      borderLeftColor: 'black',
-    };
+        borderBottomWidth: 5,
+        borderBottomColor: 'transparent',
+        borderTopWidth: 5,
+        borderTopColor: 'transparent',
+        borderLeftWidth: 10,
+        borderLeftColor: 'black',
+      };
     const openIcon = treeNodeStyle && treeNodeStyle.openIcon;
     const closeIcon = treeNodeStyle && treeNodeStyle.closeIcon;
 
@@ -171,11 +165,12 @@ export default class TreeSelect extends Component {
   _renderRow = ({ item }) => {
     const { currentNode } = this.state;
     const { isShowTreeId = false, selectedItemStyle, itemStyle, treeNodeStyle, selectType = 'single', leafCanBeSelected } = this.props;
-    const { backgroudColor, fontSize, color } = itemStyle && itemStyle;
-    const openIcon = treeNodeStyle && treeNodeStyle.openIcon;
-    const closeIcon = treeNodeStyle && treeNodeStyle.closeIcon;
+    const { backgroundColor, fontSize, color } = itemStyle && itemStyle;
+    const itemIcon = treeNodeStyle && treeNodeStyle.itemIcon;
+    const organizationIcon = treeNodeStyle && treeNodeStyle.organizationIcon;
+    const checkedIcon = treeNodeStyle && treeNodeStyle.checkedIcon;
 
-    const selectedBackgroudColor = selectedItemStyle && selectedItemStyle.backgroudColor;
+    const selectedBackgroudColor = selectedItemStyle && selectedItemStyle.backgroundColor;
     const selectedFontSize = selectedItemStyle && selectedItemStyle.fontSize;
     const selectedColor = selectedItemStyle && selectedItemStyle.color;
     const isCurrentNode = selectType === 'multiple' ? currentNode.includes(item.id) : (currentNode === item.id);
@@ -184,21 +179,29 @@ export default class TreeSelect extends Component {
       const isOpen = this.state.nodesStatus && this.state.nodesStatus.get(item && item.id) || false;
       return (
         <View>
-          <TouchableOpacity onPress={(e) => this._onPressCollapse({ e, item })} >
+          <TouchableOpacity activeOpacity={1} onPress={this._onPressCollapse.bind(this, item)} >
             <View style={{
               flexDirection: 'row',
-              backgroundColor: !leafCanBeSelected && isCurrentNode ? selectedBackgroudColor || '#FFEDCE' : backgroudColor || '#fff',
-              marginBottom: 2,
-              height: 30,
-              alignItems: 'center'
-            }}
-            >
-              { this._renderTreeNodeIcon(isOpen) }
-              {
-                isShowTreeId && <Text style={{ fontSize: 14, marginLeft: 4 }}>{item.id}</Text>
-              }
-              <Text style={[styles.textName, !leafCanBeSelected && isCurrentNode ?
-                { fontSize: selectedFontSize, color: selectedColor } : { fontSize, color }]}>{item.name}</Text>
+              backgroundColor: !leafCanBeSelected && isCurrentNode ? selectedBackgroudColor || '#FFEDCE' : backgroundColor || '#fff',
+              height: 55,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottomColor: '#999',
+              borderBottomWidth: 0.5
+            }}>
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+                {this._renderTreeNodeIcon(isOpen)}
+                {
+                  isShowTreeId && <Text style={{ fontSize: 14, marginLeft: 4 }}>{item.id}</Text>
+                }
+                {organizationIcon ? organizationIcon : null}
+                <Text style={[styles.textName, !leafCanBeSelected && isCurrentNode ? { fontSize: selectedFontSize, color: selectedColor } : { fontSize, color }]}>{item.name}</Text>
+              </View>
+              {isCurrentNode && checkedIcon ? checkedIcon : <View />}
+
             </View>
           </TouchableOpacity>
           {
@@ -216,22 +219,28 @@ export default class TreeSelect extends Component {
         </View>
       );
     }
+
     return (
-      <TouchableOpacity onPress={(e) => this._onClickLeaf({ e, item })}>
+      <TouchableOpacity activeOpacity={1} onPress={this._onClickLeaf.bind(this, item)}>
         <View style={{
           flexDirection: 'row',
-          backgroundColor: isCurrentNode ? selectedBackgroudColor || '#FFEDCE' : backgroudColor || '#fff',
-          marginBottom: 2,
-          height: 30,
-          alignItems: 'center'
-        }}
-        >
-          <Text
-            style={[styles.textName, isCurrentNode ?
-              { fontSize: selectedFontSize, color: selectedColor } : { fontSize, color }]}
-          >{item.name}</Text>
+          backgroundColor: isCurrentNode ? selectedBackgroudColor || '#FFEDCE' : backgroundColor || '#fff',
+          height: 55,
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottomColor: '#999',
+          borderBottomWidth: 0.5
+        }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            {itemIcon ? itemIcon : null}
+            <Text style={[styles.textName, isCurrentNode ? { fontSize: selectedFontSize, color: selectedColor } : { fontSize, color }]}>{item.name}</Text>
+          </View>
+          {isCurrentNode && checkedIcon ? checkedIcon : <View />}
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity >
     );
   };
 
@@ -249,8 +258,10 @@ export default class TreeSelect extends Component {
   _renderSearchBar = () => {
     const { searchValue } = this.state;
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 5,
-        borderColor: '#555', marginHorizontal: 10, }}>
+      <View style={{
+        flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 5,
+        borderColor: '#555', marginHorizontal: 10,
+      }}>
         <TextInput
           style={{ height: 38, paddingHorizontal: 5, flex: 1 }}
           value={searchValue}
@@ -263,12 +274,13 @@ export default class TreeSelect extends Component {
           placeholderTextColor="#e9e5e1"
           onChangeText={(text) => this._onChangeText('searchValue', text)}
         />
-        <TouchableOpacity onPress={this._onSearch}>
+        <TouchableOpacity activeOpacity={1} onPress={this._onSearch}>
           <Ionicons name="ios-search" style={{ fontSize: 25, marginHorizontal: 5 }} />
         </TouchableOpacity>
-      </View>
+      </View >
     );
   }
+
   render() {
     const { data } = this.props;
     return (
@@ -289,3 +301,24 @@ export default class TreeSelect extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF',
+  },
+  textName: {
+    fontSize: 14,
+    marginLeft: 5
+  },
+  contentContainer: {
+    paddingBottom: 20,
+    backgroundColor: 'white',
+  },
+  collapseIcon: {
+    width: 0,
+    height: 0,
+    marginRight: 2,
+    borderStyle: 'solid',
+  }
+});
