@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TextInput, FlatList, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, PixelRatio, View, TextInput, FlatList, Text, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { breadthFirstRecursion } from '../utils/menutransform';
 
@@ -80,7 +80,7 @@ export default class TreeSelect extends Component {
     this.setState((state) => {
       const nodesStatus = new Map(state.nodesStatus);
       if (nodesStatus.has(item && item.id)) {
-        nodesStatus.set(item && item.id, true);
+        nodesStatus.set(item && item.id, !nodesStatus.get(item && item.id));
       } else {
         nodesStatus.set(item && item.id, true);
       }
@@ -186,13 +186,10 @@ export default class TreeSelect extends Component {
               height: 55,
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottomColor: '#999',
-              borderBottomWidth: 0.5
+              borderBottomColor: '#D3D3D3',
+              borderBottomWidth: 0.6
             }}>
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 {this._renderTreeNodeIcon(isOpen)}
                 {
                   isShowTreeId && <Text style={{ fontSize: 14, marginLeft: 4 }}>{item.id}</Text>
@@ -228,8 +225,8 @@ export default class TreeSelect extends Component {
           height: 55,
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottomColor: '#999',
-          borderBottomWidth: 0.5
+          borderBottomColor: '#D3D3D3',
+          borderBottomWidth: 0.6
         }}>
           <View style={{
             flexDirection: 'row',
