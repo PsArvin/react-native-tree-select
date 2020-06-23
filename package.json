@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/suwu150/react-native-tree-select.git"
+    "url": "git+https://github.com/PsArvin/react-native-tree-select.git"
   },
   "dependencies": {
   },
@@ -21,8 +21,5 @@
   ],
   "author": "jkwu",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/suwu150/react-native-tree-select/issues"
-  },
-  "homepage": "https://github.com/suwu150/react-native-tree-select#readme"
+  "homepage": "https://github.com/PsArvin/react-native-tree-select#readme"
 }
